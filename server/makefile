@@ -1,0 +1,46 @@
+obj_dir     := obj
+# bin_dir     := bin
+LIBS        := -lpthread
+shared_file := server
+target      := $(shared_file)
+
+all_inc +=\
+-I ../thread\
+-I ../includes\
+-I listener
+
+c_src +=\
+../thread/Thread.cpp\
+listener/Listener.cpp\
+daemon/main.cpp
+
+# Derive the objects to be built:
+all_objs       := $(c_src:.cpp=.o)
+all_objs_nodir := $(notdir $(all_objs))
+
+CC_FLAGS  += -g -c -Wall -fPIC -MD
+
+VPATH = $(dir $(all_objs))
+vpath %.o ./$(obj_dir)
+
+# All Target
+.PHONY: all makedir clean
+all: makedir $(target)
+
+makedir:
+	@mkdir -p $(obj_dir) $(bin_dir)
+
+# Tool invocations	
+$(target): $(all_objs_nodir)
+	@echo Building target: $@
+	@g++  $(addprefix $(obj_dir)/, $(all_objs_nodir)) $(LIBS) -o $(shared_file)
+	@echo
+
+%.o:%.cpp
+	@echo Building file: $(notdir $<)
+	@g++ $(CC_FLAGS) $(all_inc) -o $(obj_dir)/$@ $<
+
+# Other Targets
+clean:
+	rm -rf $(obj_dir) $(bin_dir) $(shared_file)
+	@echo
