@@ -2,6 +2,7 @@
 #define LISTENER_H
 
 #include "Thread.h"
+// #include "Worker.h"
 #include "Includes.h"
 #include <stdio.h>
 #include <string.h>
@@ -10,15 +11,18 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 
+class Worker;
+
 class Listener: public Thread {
 	private:
     	struct sockaddr_in addr;
+
+    protected:
     	int listener;
     	int currentPort;
-    	// const static int startPort = 3425;
 
 	public:
-		Listener();
+		Listener(int port = 3425);
 		void run();
 		void initListener();
 		void setForListen();

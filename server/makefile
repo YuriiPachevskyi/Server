@@ -7,11 +7,13 @@ target      := $(shared_file)
 all_inc +=\
 -I ../thread\
 -I ../includes\
--I listener
+-I listener\
+-I worker
 
 c_src +=\
 ../thread/Thread.cpp\
 listener/Listener.cpp\
+worker/Worker.cpp\
 daemon/main.cpp
 
 # Derive the objects to be built:

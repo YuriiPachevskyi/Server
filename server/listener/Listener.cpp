@@ -1,6 +1,6 @@
 #include "Listener.h"
 
-Listener::Listener(): currentPort(3425) {
+Listener::Listener(int port): currentPort(port) {
 	printf("Listener constructor\n");
 }
 
@@ -41,10 +41,12 @@ void Listener::setForListen() {
             if(bytes_read <= 0) break;
             if ( strcmp(buf, NEW_CONN) == 0 ) {
                 currentPort += 1;
+                // Worker *vasili = new Worker(currentPort);
+                // vasili->start();
 
             }
             // printf("%s\n", buf);
-            // send(sock, buf, bytes_read, 0);
+            send(sock, buf, bytes_read, 0);
         }
         // close(sock);
     }
