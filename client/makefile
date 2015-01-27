@@ -1,0 +1,37 @@
+obj_dir     := .obj
+LIBS        := -lpthread
+shared_file := client
+target      := $(shared_file)
+
+all_inc +=\
+-I ../includes\
+
+c_src +=\
+./client.cpp
+
+all_objs       := $(c_src:.cpp=.o)
+all_objs_nodir := $(notdir $(all_objs))
+
+CC_FLAGS  += -g -c -Wall -fPIC -MD
+
+VPATH = $(dir $(all_objs))
+vpath %.o ./$(obj_dir)
+
+.PHONY: all makedir clean
+all: makedir $(target)
+
+makedir:
+	@mkdir -p $(obj_dir) $(bin_dir)
+
+$(target): $(all_objs_nodir)
+	@echo Building target: $@
+	@g++  $(addprefix $(obj_dir)/, $(all_objs_nodir)) $(LIBS) -o $(shared_file)
+	@echo
+
+%.o:%.cpp
+	@echo Building file: $(notdir $<)
+	@g++ $(CC_FLAGS) $(all_inc) -o $(obj_dir)/$@ $<
+
+clean:
+	rm -rf $(obj_dir) $(shared_file)
+	@echo
