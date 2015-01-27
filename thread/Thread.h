@@ -4,19 +4,19 @@
 #include <pthread.h>
 
 class Thread {
+private:
+    static void* threadStartRoutine(void *arg);
+    pthread_t mTid;
+    bool mRunning;
+
 public:
     Thread();
     virtual ~Thread();
     virtual void run() = 0;
+    long unsigned int getThreadId();
     bool start();
     bool join();
     void stop();
-
-private:
-    static void* threadStartRoutine(void *arg);
-    
-    pthread_t mTid;
-    bool mRunning;
 };
 
 #endif //_THREAD_H_INCLUDED

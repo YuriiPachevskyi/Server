@@ -1,9 +1,5 @@
 #include "Thread.h"
 
-#include <iostream>
-
-using namespace std;
-
 Thread::Thread() : mRunning(false) {
 }
 
@@ -11,6 +7,10 @@ Thread::~Thread() {
     if (mRunning) {
         stop();
     }
+}
+
+long unsigned int Thread::getThreadId() {
+    return pthread_self();
 }
 
 bool Thread::start() {
@@ -25,11 +25,11 @@ bool Thread::start() {
 }
 
 bool Thread::join() {
-	if (mRunning == true) {
-		pthread_join(mTid, NULL);
-		return true;
-	}
-	return false;
+    if (mRunning == true) {
+        pthread_join(mTid, NULL);
+        return true;
+    }
+    return false;
 }
 
 
