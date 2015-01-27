@@ -7,10 +7,11 @@
 class Worker: public Listener {
     private:
         int id;
+        int socket;
         static int counter;
 
     public:
-        Worker(int port);
+        Worker(int socket);
         virtual ~Worker();
         virtual void run();
         void initWorker();

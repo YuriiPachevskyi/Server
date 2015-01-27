@@ -18,8 +18,8 @@ int Listener::getPort() {
     return currentPort;
 }
 
-bool Listener::createWorker(int port) {
-    Worker *worker = new Worker(port);
+bool Listener::createWorker(int socket) {
+    Worker *worker = new Worker(socket);
     if ( worker->start() == true ) {
         return true;
     }
@@ -45,8 +45,6 @@ void Listener::initListener() {
 void Listener::setForListen() {
     maxPort = currentPort;
     printf("setForListen threadId = %lu\n", this->getThreadId());
-    char buf[1024];
-    int bytes_read;
 
     while(1) {
         int sock = accept(listener, NULL, NULL);
@@ -54,22 +52,12 @@ void Listener::setForListen() {
         if ( sock < 0 ) {
             perror("Listener accept");
         }
-        while(1) {
-            bytes_read = recv(sock, buf, 1024, 0);
 
-            if ( bytes_read <= 0 ) break;
-            if ( strcmp(buf, NEW_CONN) == 0 ) {
-                maxPort += 1;
-                printf("new port = %d\n", maxPort);
-                char newbuf[4];
-                *((int*)newbuf) = maxPort;
-                if ( this->createWorker(maxPort) == true ) {
-                    send(sock, newbuf, sizeof(newbuf), 0);
-                } else {
-                    perror("Listener worker creating");
-                }
-            }
+        if ( this->createWorker(sock) == true ) {
+//            send(sock, NEW_CONN, sizeof(NEW_CONN), 0);
+        } else {
+            perror("Listener worker creating");
         }
-        close(sock);
+
     }
 }

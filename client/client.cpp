@@ -5,49 +5,46 @@
 #include <unistd.h>
 #include <stdio.h>
 
-char message[] = "Hello there!               ";
+char message[] = "Hello there!                       111";
 char message2[] = "message to worker";
 char buf[sizeof(message)];
 
 int main()
 {
-    int sock1;
-    int sock2;
+    int sock;
     int port = 3425;
     struct sockaddr_in addr;
 
-    sock1 = socket(AF_INET, SOCK_STREAM, 0);
-    sock2 = socket(AF_INET, SOCK_STREAM, 0);
-    if (sock1 < 0 ){
+    sock = socket(AF_INET, SOCK_STREAM, 0);
+    if (sock < 0 ){
         perror("socket");
     }
 
     addr.sin_family = AF_INET;
     addr.sin_port = htons(port);
     addr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
-    if ( connect(sock1, (struct sockaddr *)&addr, sizeof(addr)) < 0 ) {
+    if ( connect(sock, (struct sockaddr *)&addr, sizeof(addr)) < 0 ) {
         perror("connect");
     }
 
-    send(sock1, NEW_CONN, sizeof(NEW_CONN), 0);
+    send(sock, NEW_CONN, sizeof(NEW_CONN), 0);
+    recv(sock, buf, sizeof(buf), 0);
+    printf("result = %s\n", buf);
 
-    char *newbuf[4];
-    recv(sock1, newbuf, sizeof(newbuf), 0);
-    port = *((int*)newbuf);
+    send(sock, message2, sizeof(message2), 0);
+    recv(sock, buf, sizeof(buf), 0);
+    sleep(5);
+    printf("result second message    = %s\n", buf);
 
-    printf("result after sleep =  %d, sock = %d\n", port, sock1);
+//    printf("before recv message2\n");
+//    recv(sock, message, sizeof(message), 0);
+//    printf("after recv message2\n");
 
-    addr.sin_port = htons(port);
+//    send(sock, END_CONN, sizeof(END_CONN), 0);
 
-    if ( connect(sock2, (struct sockaddr *)&addr, sizeof(addr)) < 0 ) {
-        perror("connect");
-    }
-    send(sock2, message2, sizeof(message2), 0);
+//    for ( int i = 0; i < 5; i++ ) {
 
-    recv(sock2, message, sizeof(message), 0);
-    printf("result %s\n", message);
-
-    send(sock2, END_CONN, sizeof(END_CONN), 0);
+//    }
 
 
     return 0;
