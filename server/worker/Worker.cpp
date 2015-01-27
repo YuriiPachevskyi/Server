@@ -3,9 +3,13 @@
 int Worker::counter = 0;
 
 Worker::Worker(int port): Listener(port) {
-	printf("Worker constructor\n");
-	counter += 1;
-	id = counter;
+    printf("Worker constructor id = %lu\n", this->getThreadId());
+    counter += 1;
+    id = counter;
+}
+
+Worker::~Worker() {
+    printf("worker destrucor colling\n");
 }
 
 void Worker::run() {
@@ -14,34 +18,30 @@ void Worker::run() {
 }
 
 void Worker::initWorker() {
-	initListener();
+    initListener();
 }
 
 void Worker::setForWork() {
-	printf("setForWork\n");
+    printf("setForWork threadId = %lu\n", this->getThreadId());
     char buf[1024];
     int bytes_read;
-	
-	while(1) {
-        int sock = accept(listener, NULL, NULL);
-        if(sock < 0) {
-            printf("accept");
-        }
 
+    while(1) {
+        int sock = accept(listener, NULL, NULL);
+
+        if ( sock < 0 ) {
+            perror("Worker accept");
+        }
         while(1) {
             bytes_read = recv(sock, buf, 1024, 0);
-            if(bytes_read <= 0) break;
-            if ( strcmp(buf, NEW_CONN) == 0 ) {
-                currentPort += 1;
-
-            }
-            printf("%s\n", buf);
+            if ( bytes_read <= 0 ) break;
+            printf("worker print result  =  %s\n", buf);
             send(sock, buf, bytes_read, 0);
         }
-        // close(sock);
+        if ( strcmp(buf, END_CONN) == 0 ) {
+            printf("Worker end of connection threadId = %lu\n", this->getThreadId());
+            close(sock);
+            delete this;
+        }
     }
-}
-
-Worker::~Worker() {
-
 }
