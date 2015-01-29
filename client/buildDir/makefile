@@ -1,13 +1,18 @@
 obj_dir     := .obj
-LIBS        := -lpthread
+LIBS        := 
 shared_file := client
 target      := $(shared_file)
+log_status  := -DLOG_STATUS=PRINT_INFO
 
 all_inc +=\
--I ../includes\
+-I ../../includes\
+-I ../client\
+-I ../../log\
 
 c_src +=\
-./client.cpp
+../../log/Log.cpp\
+../client/Client.cpp\
+../main/main.cpp
 
 all_objs       := $(c_src:.cpp=.o)
 all_objs_nodir := $(notdir $(all_objs))
@@ -30,7 +35,7 @@ $(target): $(all_objs_nodir)
 
 %.o:%.cpp
 	@echo Building file: $(notdir $<)
-	@g++ $(CC_FLAGS) $(all_inc) -o $(obj_dir)/$@ $<
+	@g++ $(CC_FLAGS) $(all_inc) $(log_status) -o $(obj_dir)/$@ $<
 
 clean:
 	rm -rf $(obj_dir) $(shared_file)
