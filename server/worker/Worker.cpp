@@ -1,15 +1,16 @@
 #include "Worker.h"
+#include "Log.h"
 
 int Worker::counter = 0;
 
 Worker::Worker(int socket): socket(socket) {
-    printf("Worker constructor id = %lu\n", this->getThreadId());
+    LOGI("constructor socket =  %d", socket);
     counter += 1;
     id = counter;
 }
 
 Worker::~Worker() {
-    printf("worker destrucor colling\n");
+    LOGI("destructor");
 }
 
 void Worker::run() {
@@ -23,7 +24,7 @@ void Worker::setForWork() {
     while(1) {
         bytes_read = recv(socket, buf, 1024, 0);
         if ( bytes_read <= 0 ) break;
-        printf("worker print result  =  %s\n", buf);
+        LOGI("content = %s", buf);
         send(socket, buf, bytes_read, 0);
     }
     close(socket);

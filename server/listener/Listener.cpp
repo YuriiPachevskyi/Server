@@ -1,12 +1,13 @@
 #include "Listener.h"
 #include "Worker.h"
+#include "Log.h"
 
 Listener::Listener(int port): port(port) {
-    printf("Listener constructor\n");
+    LOGI("constructor");
 }
 
 Listener::~Listener() {
-    printf("Listener destructor\n");
+    LOGI("destructor");
 }
 
 void Listener::run() {
@@ -25,14 +26,14 @@ bool Listener::createWorker(int socket) {
 void Listener::initListener() {
     listener = socket(AF_INET, SOCK_STREAM, 0);
     if ( listener < 0 ) {
-        perror("Listener socket");
+        LOGE("socket");
     }
     
     addr.sin_family = AF_INET;
     addr.sin_port = htons(port);
     addr.sin_addr.s_addr = htonl(INADDR_ANY);
     if ( bind(listener, (struct sockaddr *)&addr, sizeof(addr)) < 0 ) {
-        perror("Listener bind");
+        LOGE("bind");
     }
     listen(listener, 1);
 }
@@ -42,10 +43,11 @@ void Listener::setForListen() {
         int sock = accept(listener, NULL, NULL);
 
         if ( sock < 0 ) {
-            perror("Listener accept");
+            LOGE("accept");
         }
         if ( this->createWorker(sock) != true ) {
-            perror("Listener worker creating");
+            LOGE("Error creating Worker");
         }
+        LOGI("Set new connection");
     }
 }
