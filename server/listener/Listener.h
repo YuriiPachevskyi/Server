@@ -12,22 +12,17 @@
 
 class Listener: public Thread {
     private:
-    struct sockaddr_in addr;
-
-    protected:
+        int port;
         int listener;
-        int currentPort;
-        int maxPort;
+        struct sockaddr_in addr;
 
     public:
         Listener(int port = 3425);
         virtual ~Listener();
         virtual void run();
         void initListener();
-        bool createWorker(int port); //temporary port setting
         void setForListen();
-        virtual int getPort();
+        bool createWorker(int socket);
 };
-
 
 #endif //LISTENER_H

@@ -1,7 +1,7 @@
 #include "Listener.h"
 #include "Worker.h"
 
-Listener::Listener(int port): currentPort(port) {
+Listener::Listener(int port): port(port) {
     printf("Listener constructor\n");
 }
 
@@ -14,10 +14,6 @@ void Listener::run() {
     setForListen();
 }
 
-int Listener::getPort() {
-    return currentPort;
-}
-
 bool Listener::createWorker(int socket) {
     Worker *worker = new Worker(socket);
     if ( worker->start() == true ) {
@@ -27,14 +23,13 @@ bool Listener::createWorker(int socket) {
 }
 
 void Listener::initListener() {
-    printf("initListener\n");
     listener = socket(AF_INET, SOCK_STREAM, 0);
     if ( listener < 0 ) {
         perror("Listener socket");
     }
     
     addr.sin_family = AF_INET;
-    addr.sin_port = htons(currentPort);
+    addr.sin_port = htons(port);
     addr.sin_addr.s_addr = htonl(INADDR_ANY);
     if ( bind(listener, (struct sockaddr *)&addr, sizeof(addr)) < 0 ) {
         perror("Listener bind");
@@ -43,21 +38,14 @@ void Listener::initListener() {
 }
 
 void Listener::setForListen() {
-    maxPort = currentPort;
-    printf("setForListen threadId = %lu\n", this->getThreadId());
-
     while(1) {
         int sock = accept(listener, NULL, NULL);
 
         if ( sock < 0 ) {
             perror("Listener accept");
         }
-
-        if ( this->createWorker(sock) == true ) {
-//            send(sock, NEW_CONN, sizeof(NEW_CONN), 0);
-        } else {
+        if ( this->createWorker(sock) != true ) {
             perror("Listener worker creating");
         }
-
     }
 }
