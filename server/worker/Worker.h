@@ -1,10 +1,13 @@
 #ifndef WORKER_H
 #define WORKER_H
 
-#include "Listener.h"
+#include <stdio.h>
+#include <unistd.h>
+#include <netinet/in.h>
+#include "Thread.h"
 #include "Includes.h"
 
-class Worker: public Listener {
+class Worker: public Thread {
     private:
         int id;
         int socket;
@@ -14,7 +17,6 @@ class Worker: public Listener {
         Worker(int socket);
         virtual ~Worker();
         virtual void run();
-        void initWorker();
         void setForWork();
 };
 

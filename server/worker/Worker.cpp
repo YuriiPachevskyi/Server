@@ -13,16 +13,10 @@ Worker::~Worker() {
 }
 
 void Worker::run() {
-//    initWorker();
     setForWork();
 }
 
-void Worker::initWorker() {
-    initListener();
-}
-
 void Worker::setForWork() {
-    printf("setForWork threadId = %lu\n", this->getThreadId());
     char buf[1024];
     int bytes_read;
 
